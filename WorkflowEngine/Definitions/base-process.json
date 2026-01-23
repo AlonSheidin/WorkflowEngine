@@ -1,0 +1,62 @@
+﻿{
+  "id": "base-process",
+  "name": "Base Example Process",
+  "version": 1,
+  "startState": "Start",
+  "states": {
+      "Start": {
+        "type": "task",
+        "description": "Initialize process data",
+        "next": "Validate"
+      },
+
+    "Validate": {
+      "type": "decision",
+      "description": "Check if input is valid",
+      "transitions": [
+        {
+          "condition": "isValid == true",
+          "next": "ExecuteMainTask"
+        },
+        {
+          "condition": "isValid == false",
+          "next": "Reject"
+        }
+      ]
+    },
+
+    "ExecuteMainTask": {
+      "type": "task",
+      "description": "Perform the main operation",
+      "onSuccess": "Complete",
+      "onFailure": "Fail",
+      "retryPolicy": {
+        "maxRetries": 2,
+        "delaySeconds": 5
+      }
+    },
+
+    "Reject": {
+      "type": "task",
+      "description": "Handle invalid input",
+      "next": "End"
+    },
+
+    "Fail": {
+      "type": "task",
+      "description": "Handle unrecoverable failure",
+      "next": "End"
+    },
+
+    "Complete": {
+      "type": "task",
+      "description": "Finalize successful process",
+      "next": "End"
+    },
+
+    "End": {
+      "type": "end",
+      "description": "Process finished"
+    }
+  }
+}
