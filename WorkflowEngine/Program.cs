@@ -6,11 +6,9 @@ class Program
 {
     static void Main(string[] args)
     {
-        /*var engine = new WorkflowEngine("");
-        engine.Execute();*/
-        var process =
-            JsonHelper.GetProcess("F:\\Coding\\WorkflowEngine\\WorkflowEngine\\Definitions\\base-process.json");
-        Console.WriteLine(process);
+        var engine = new WorkflowEngine("F:\\Coding\\WorkflowEngine\\WorkflowEngine\\Definitions\\base-process.json");
+        engine.Execute();
+        
     }
     
     /*

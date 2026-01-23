@@ -14,7 +14,7 @@ public abstract class State
     {
         Type = type;
         Description = description ?? throw new ArgumentNullException(nameof(description));
-            }
+    }
 
     public override string ToString()
     {

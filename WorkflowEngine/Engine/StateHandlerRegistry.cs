@@ -14,8 +14,8 @@ public static class StateHandlerRegistry
     };
     
     
-    public static ITask? GetTaskByName(string name)
+    public static ITask GetTaskByName(string name)
     {
-        return Tasks.GetValueOrDefault(name);
+        return Tasks.GetValueOrDefault(name) ?? throw new InvalidOperationException($"No task with name {name} found");
     }
 }

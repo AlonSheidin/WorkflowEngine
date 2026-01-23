@@ -1,18 +1,33 @@
-﻿namespace WorkflowEngine.Engine;
+﻿using WorkflowEngine.Utility;
+
+namespace WorkflowEngine.Engine;
 
 public class WorkflowEngine
 {
-    WorkflowContext _context;
+    private WorkflowContext _context;
+    private WorkflowRunner _runner;
+    private Process process;
     public WorkflowEngine(string definition)
     {
         _context = new WorkflowContext();
+        process = JsonHelper.GetProcess(definition) 
+                          ?? throw new Exception("Process not found");
         
-
     }
 
     public void Execute()
     {
-        Console.WriteLine("--- Process Started ---");
+        Console.WriteLine("--- Starting Process ---");
+        State startState = GetStateByName(process.StartState);
+        var startTask = StateHandlerRegistry.GetTaskByName(process.StartState);
+        _runner = new WorkflowRunner{CurrentState = startState, Process = process,  TaskResult = startTask.Execute(_context) };
+        Console.WriteLine(_runner.GetNextState());
         Console.WriteLine("--- Process Finished ---");
     }
+
+    public State GetStateByName(string name)
+    {
+        return process.States[name];
+    }
 }
+

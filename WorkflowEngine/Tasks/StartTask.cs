@@ -8,6 +8,7 @@ public class StartTask : ITask
     {
         context.IsValid = true;
         context.Counter = 1;
+        Console.WriteLine(" -> Start Task");
         return TaskResult.Success;
     }
 }
