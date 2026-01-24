@@ -12,7 +12,8 @@ public abstract class State
     public StateType Type { get; set; }
     public string Description { get; set; }
     
-    
+    [JsonIgnore]
+    public string Name { get; set; }
 
     protected State(StateType type, string description)
     {
@@ -22,7 +23,7 @@ public abstract class State
 
     public override string ToString()
     {
-        return $"Type: {Type}, Description: {Description},";
+        return $"Name: {Name}, Type: {Type}, Description: {Description},";
     }
 }
 

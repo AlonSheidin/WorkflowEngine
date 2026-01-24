@@ -4,9 +4,12 @@ public class WorkflowContext
 {
     public bool IsValid { get; set; }
     public int Counter { get; set; }
+    public int Price {get; set; }
+    public bool Initialized {get; set; }
 
-    public override string ToString()
-    {
-        return $"IsValid: {IsValid}, Counter: {Counter}";
-    }
+    public int OrderId {get; set; }
+    
+    public bool PaymentCharged {get; set; }
+
+    public bool Shipped {get; set; }
 }

@@ -1,0 +1,70 @@
+﻿{
+  "startState": "Start",
+  "states": {
+    "Start": {
+      "type": "task",
+      "description": "Initialize workflow context",
+      "next": "ValidateOrder"
+    },
+
+    "ValidateOrder": {
+      "type": "task",
+      "description": "Validate order data",
+      "onSuccess": "Condition",
+      "onFailure": "ValidationFailed"
+    },
+
+    "Condition":{
+      "type": "decision",
+      "description": "Check Order Price",
+      "transitions": [
+        {
+          "condition": "Price > 0 && Price < 100000",
+          "next": "ChargePayment"
+        },
+        {
+          "condition": "Price < 0",
+          "next": "ValidationFailed"
+        },
+        {
+          "condition": "Price > 100000",
+          "next": "ValidationFailed"
+        }
+      ]
+    },
+
+    "ChargePayment": {
+      "type": "task",
+      "description": "Charge customer payment",
+      "onSuccess": "ShipOrder",
+      "onFailure": "PaymentFailed"
+    },
+
+    "ShipOrder": {
+      "type": "task",
+      "description": "Ship the order",
+      "onSuccess": "OrderCompleted",
+      "onFailure": "ShippingFailed"
+    },
+
+    "ValidationFailed": {
+      "type": "end",
+      "description": "Order validation failed"
+    },
+
+    "PaymentFailed": {
+      "type": "end",
+      "description": "Payment could not be processed"
+    },
+
+    "ShippingFailed": {
+      "type": "end",
+      "description": "Order shipping failed"
+    },
+
+    "OrderCompleted": {
+      "type": "end",
+      "description": "Order completed successfully"
+    }
+  }
+}

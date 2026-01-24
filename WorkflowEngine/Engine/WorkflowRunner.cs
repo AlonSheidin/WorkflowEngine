@@ -16,11 +16,14 @@ public class WorkflowRunner
     {
         while (CurrentState is not null)
         {
-            Console.WriteLine(CurrentState.ToString());
+            Console.Write(" --> state: "+CurrentState.Name);
             if(CurrentState is TaskState taskState)
                 TaskResult = taskState.Task.Execute(Context);
+            Console.Write(", Result: "+TaskResult);
+            Console.WriteLine();
             CurrentState = GetNextState();
         }
+
     }
     
     public State? GetNextState()
@@ -40,7 +43,7 @@ public class WorkflowRunner
 
     private State GetNextStateOfTaskState(TaskState state)
     {
-        if (state.Next != null && state is { OnSuccess: null, OnFailure: null, RetryPolicy: null })
+        if (state.Next != null && state is { OnSuccess: null, OnFailure: null, RetryPolicy: (0, 0) })
         {
             return TaskResult == TaskResult.Success ? Process.States[state.Next] : throw new Exception("Failure of safe task");
         }

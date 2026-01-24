@@ -1,11 +1,13 @@
-﻿namespace WorkflowEngine.States;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WorkflowEngine.States;
 
 public class Process
 {
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public int Version { get; set; }
-    public string StartState { get; set; }
+    public string? Id { get; set; }
+    public string? Name { get; set; }
+    public int? Version { get; set; }
+    public required string StartState { get; set; }
     public Dictionary<string,State> States { get; set; }
 
     public override string ToString()

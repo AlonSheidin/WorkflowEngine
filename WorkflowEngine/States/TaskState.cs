@@ -8,7 +8,7 @@ public class TaskState : State
     public string Next { get; set; }
     public string OnSuccess { get; set; }
     public string OnFailure { get; set; }
-    public RetryPolicy? RetryPolicy { get; set; }
+    public RetryPolicy? RetryPolicy { get; set; } = new RetryPolicy(0, 0);
     public int CurrentRetryCount { get; set; } = 0;
     [JsonIgnore]
     public ITask Task { get; set; }

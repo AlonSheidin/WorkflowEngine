@@ -3,5 +3,5 @@
 public enum TaskResult
 {
     Success,
-    Failure
+    Failure,
 }
