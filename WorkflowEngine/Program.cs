@@ -6,7 +6,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        var engine = new WorkflowEngine("F:\\Coding\\WorkflowEngine\\WorkflowEngine\\Definitions\\full-workflow-process.json");
+        var engine = new WorkflowEngine("processPath");
         engine.Execute();
         
     }
