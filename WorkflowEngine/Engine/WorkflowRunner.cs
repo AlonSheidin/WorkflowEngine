@@ -5,40 +5,39 @@ using WorkflowEngine.Transitions;
 
 namespace WorkflowEngine.Engine;
 
-public class WorkflowRunner
+public class WorkflowRunner(Process process, WorkflowContext context)
 {
-    public Process Process { get; set; }
-    public State? CurrentState { get; set; }
-    public TaskResult TaskResult { get; set; }
-    public WorkflowContext Context { get; set; }
+    private Process Process { get; set; } = process;
+    private State? CurrentState { get; set; }
+    private TaskResult TaskResult { get; set; }
+    private WorkflowContext Context { get; set; } = context;
 
-    public void Run()
+    public void Run(State startState)
     {
+        CurrentState = startState;
         while (CurrentState is not null)
         {
             Console.Write(" --> state: "+CurrentState.Name);
-            if(CurrentState is TaskState taskState)
+            if (CurrentState is TaskState taskState)
+            {
                 TaskResult = taskState.Task.Execute(Context);
-            Console.Write(", Result: "+TaskResult);
+                Console.Write(", Result: "+TaskResult);
+            }
             Console.WriteLine();
             CurrentState = GetNextState();
         }
 
     }
     
-    public State? GetNextState()
+    private State? GetNextState()
     {
-        switch (CurrentState)
+        return CurrentState switch
         {
-            case TaskState state:
-                return GetNextStateOfTaskState(state);
-            case DecisionState decisionState:
-                return GetNextStateOfDecisionState(decisionState);
-            case EndState:
-                return null;
-            default:
-                throw new ArgumentException("Unknown state", nameof(CurrentState));
-        }
+            TaskState state => GetNextStateOfTaskState(state),
+            DecisionState decisionState => GetNextStateOfDecisionState(decisionState),
+            EndState => null,
+            _ => throw new ArgumentException("Unknown state", nameof(CurrentState))
+        };
     }
 
     private State GetNextStateOfTaskState(TaskState state)

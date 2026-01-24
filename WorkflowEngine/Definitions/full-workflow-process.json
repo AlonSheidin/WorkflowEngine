@@ -23,11 +23,11 @@
           "next": "ChargePayment"
         },
         {
-          "condition": "Price < 0",
+          "condition": "Price <= 0",
           "next": "ValidationFailed"
         },
         {
-          "condition": "Price > 100000",
+          "condition": "Price >= 100000",
           "next": "ValidationFailed"
         }
       ]

@@ -22,23 +22,12 @@ public class WorkflowEngine
     public void Execute()
     {
         Console.WriteLine("--- Starting Process ---");
-        State startState = GetStateByName(process.StartState);
-        var startTask = StateHandlerRegistry.GetTaskByName(process.StartState);
-        _runner = new WorkflowRunner
-        {
-            CurrentState = startState,
-            Process = process,
-            TaskResult = startTask.Execute(_context),
-            Context = _context
-        };
-        _runner.Run();
+        _runner = new WorkflowRunner(process, _context);
+        _runner.Run(process.States[process.StartState]);
         Console.WriteLine("--- Process Finished ---");
     }
 
-    public State GetStateByName(string name)
-    {
-        return process.States[name];
-    }
+    
 
 }
 

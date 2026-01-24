@@ -8,7 +8,7 @@ public class StartTask : ITask
     {
         context.Initialized = true;
         context.OrderId = 1;
-        context.Price = -10;
+        context.Price = 1;
         return TaskResult.Success;
     }
 }

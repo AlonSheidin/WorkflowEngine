@@ -52,7 +52,15 @@ public static class ConditionEvaluator
     {
         if (text.Contains("=="))
             return BuildBinary(text, "==", contextParameter);
-
+        
+        if(text.Contains("!="))
+            return BuildBinary(text, "!=", contextParameter);
+        if(text.Contains("<="))
+            return BuildBinary(text, "<=", contextParameter);
+        
+        if(text.Contains(">="))
+            return BuildBinary(text, ">=", contextParameter);
+        
         if (text.Contains("<"))
             return BuildBinary(text, "<", contextParameter);
 
@@ -89,6 +97,9 @@ public static class ConditionEvaluator
         return op switch
         {
             "==" => Expression.Equal(left, right),
+            "!=" => Expression.NotEqual(left, right),
+            "<=" => Expression.LessThanOrEqual(left, right),
+            ">=" => Expression.GreaterThanOrEqual(left, right),
             "<"  => Expression.LessThan(left, right),
             ">"  => Expression.GreaterThan(left, right),
             _ => throw new InvalidOperationException()

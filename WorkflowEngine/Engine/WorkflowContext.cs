@@ -6,10 +6,7 @@ public class WorkflowContext
     public int Counter { get; set; }
     public int Price {get; set; }
     public bool Initialized {get; set; }
-
     public int OrderId {get; set; }
-    
     public bool PaymentCharged {get; set; }
-
     public bool Shipped {get; set; }
 }
