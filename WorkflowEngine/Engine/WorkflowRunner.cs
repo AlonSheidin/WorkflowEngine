@@ -8,9 +8,20 @@ namespace WorkflowEngine.Engine;
 public class WorkflowRunner
 {
     public Process Process { get; set; }
-    public State CurrentState { get; set; }
+    public State? CurrentState { get; set; }
     public TaskResult TaskResult { get; set; }
     public WorkflowContext Context { get; set; }
+
+    public void Run()
+    {
+        while (CurrentState is not null)
+        {
+            Console.WriteLine(CurrentState.ToString());
+            if(CurrentState is TaskState taskState)
+                TaskResult = taskState.Task.Execute(Context);
+            CurrentState = GetNextState();
+        }
+    }
     
     public State? GetNextState()
     {
@@ -34,9 +45,12 @@ public class WorkflowRunner
             return TaskResult == TaskResult.Success ? Process.States[state.Next] : throw new Exception("Failure of safe task");
         }
 
-        if (state.OnSuccess != null && state.OnFailure != null && state is { RetryPolicy: not null, Next: null })
+        if (state.OnSuccess != null && state.OnFailure != null && state.RetryPolicy is not null &&  state.Next is null )
         {
-            if (state.CurrentRetryCount >= state.RetryPolicy.MaxRetries)
+            if(TaskResult == TaskResult.Success)
+                return Process.States[state.OnSuccess];
+            
+            if (state.CurrentRetryCount >= state.RetryPolicy.MaxRetries && TaskResult == TaskResult.Failure)
             {
                 return Process.States[state.OnFailure];
             }
@@ -57,7 +71,6 @@ public class WorkflowRunner
             {
                 return Process.States[transition.Next];
             }
-            
         }
         throw new Exception("No Next state found");
     }

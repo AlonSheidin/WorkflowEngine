@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using WorkflowEngine.Tasks;
 
 namespace WorkflowEngine.States;
 
@@ -10,6 +11,8 @@ public abstract class State
 {
     public StateType Type { get; set; }
     public string Description { get; set; }
+    
+    
 
     protected State(StateType type, string description)
     {

@@ -1,4 +1,7 @@
-﻿namespace WorkflowEngine.States;
+﻿using System.Text.Json.Serialization;
+using WorkflowEngine.Tasks;
+
+namespace WorkflowEngine.States;
 
 public class TaskState : State
 {
@@ -7,6 +10,8 @@ public class TaskState : State
     public string OnFailure { get; set; }
     public RetryPolicy? RetryPolicy { get; set; }
     public int CurrentRetryCount { get; set; } = 0;
+    [JsonIgnore]
+    public ITask Task { get; set; }
     public TaskState() : base(StateType.Task, "")
     {
         
