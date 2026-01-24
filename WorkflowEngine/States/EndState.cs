@@ -1,4 +1,4 @@
-﻿namespace WorkflowEngine;
+﻿namespace WorkflowEngine.States;
 
 public class EndState : State
 {

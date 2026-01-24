@@ -1,3 +1,6 @@
-﻿namespace WorkflowEngine;
+﻿using System.Text.Json.Serialization;
 
-public record Transition(string ConditionExpression, string NextState) ;
+namespace WorkflowEngine.Transitions;
+
+public record Transition(string Condition, string Next);
+

@@ -2,10 +2,6 @@
 
 public class WorkflowContext
 {
-    public WorkflowContext()
-    {
-    }
-
     public bool IsValid { get; set; }
     public int Counter { get; set; }
 

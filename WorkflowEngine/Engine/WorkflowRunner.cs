@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices.ComTypes;
+using WorkflowEngine.States;
 using WorkflowEngine.Tasks;
+using WorkflowEngine.Transitions;
 
 namespace WorkflowEngine.Engine;
 
@@ -8,6 +10,7 @@ public class WorkflowRunner
     public Process Process { get; set; }
     public State CurrentState { get; set; }
     public TaskResult TaskResult { get; set; }
+    public WorkflowContext Context { get; set; }
     
     public State? GetNextState()
     {
@@ -33,12 +36,13 @@ public class WorkflowRunner
 
         if (state.OnSuccess != null && state.OnFailure != null && state is { RetryPolicy: not null, Next: null })
         {
-            if (state.CurrentRetryCount < state.RetryPolicy.MaxRetries)
+            if (state.CurrentRetryCount >= state.RetryPolicy.MaxRetries)
             {
-                state.CurrentRetryCount++;
-                return state;
+                return Process.States[state.OnFailure];
             }
-            return Process.States[state.OnFailure];
+            
+            state.CurrentRetryCount++;
+            return state;
         }
         
         throw new Exception($"Task State cannot have a Next state and OnSuccess or OnFailure Sate's (state: {state})");
@@ -46,6 +50,15 @@ public class WorkflowRunner
 
     private State GetNextStateOfDecisionState(DecisionState decisionState)
     {
-        throw new NotImplementedException();
+        foreach (var transition in decisionState.Transitions)
+        {
+            var condition = transition.CompileCondition();
+            if (condition(Context))
+            {
+                return Process.States[transition.Next];
+            }
+            
+        }
+        throw new Exception("No Next state found");
     }
 }

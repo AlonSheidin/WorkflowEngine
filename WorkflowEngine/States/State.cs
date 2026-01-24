@@ -1,5 +1,6 @@
-﻿namespace WorkflowEngine;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+
+namespace WorkflowEngine.States;
 
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(TaskState), "task")]

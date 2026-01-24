@@ -1,4 +1,5 @@
-﻿using WorkflowEngine.Utility;
+﻿using WorkflowEngine.States;
+using WorkflowEngine.Utility;
 
 namespace WorkflowEngine.Engine;
 
@@ -20,8 +21,19 @@ public class WorkflowEngine
         Console.WriteLine("--- Starting Process ---");
         State startState = GetStateByName(process.StartState);
         var startTask = StateHandlerRegistry.GetTaskByName(process.StartState);
-        _runner = new WorkflowRunner{CurrentState = startState, Process = process,  TaskResult = startTask.Execute(_context) };
-        Console.WriteLine(_runner.GetNextState());
+        _runner = new WorkflowRunner
+        {
+            CurrentState = startState,
+            Process = process,
+            TaskResult = startTask.Execute(_context),
+            Context =  _context
+        };
+        var next = _runner.GetNextState();
+        
+        Console.WriteLine(next);
+        _runner.CurrentState = next;
+        next = _runner.GetNextState();
+        Console.WriteLine(next);
         Console.WriteLine("--- Process Finished ---");
     }
 

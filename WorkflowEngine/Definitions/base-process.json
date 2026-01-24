@@ -15,11 +15,11 @@
       "description": "Check if input is valid",
       "transitions": [
         {
-          "condition": "isValid == true",
+          "condition": "IsValid == true",
           "next": "ExecuteMainTask"
         },
         {
-          "condition": "isValid == false",
+          "condition": "IsValid == false",
           "next": "Reject"
         }
       ]
