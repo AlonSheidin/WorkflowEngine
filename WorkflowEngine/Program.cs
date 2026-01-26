@@ -1,4 +1,5 @@
 ﻿using WorkflowEngine.Utility;
+using WorkflowEngine.Utility.Logger;
 
 namespace WorkflowEngine;
 using Engine;
@@ -6,9 +7,9 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        var engine = new WorkflowEngine("processPath");
+        var engine = new WorkflowEngine("process.json");
+        engine.WorkflowEventOccurred += new ConsoleLogger().OnWorkflowEvent;
         await engine.ExecuteAsync();
-
     }
     
     /*

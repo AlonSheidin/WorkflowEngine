@@ -1,39 +1,47 @@
 ﻿using WorkflowEngine.States;
 using WorkflowEngine.Tasks;
 using WorkflowEngine.Utility;
+using WorkflowEngine.Utility.Logger;
 
 namespace WorkflowEngine.Engine;
 
 public class WorkflowEngine
 {
     private WorkflowContext _context;
-    private WorkflowRunner _runner;
-    private Process process;
+    public Process Process {get; private set;}
     
+    public event Action<WorkflowEvent> WorkflowEventOccurred;
+
+    private void RaiseEvent(WorkflowEvent evt)
+    {
+        WorkflowEventOccurred?.Invoke(evt);
+    }
 
     public WorkflowEngine(string definition)
     {
         _context = new WorkflowContext();
-        process = JsonHelper.GetProcess(definition)
+        Process = JsonHelper.GetProcess(definition)
                   ?? throw new Exception("Process not found");
-        process.SetTasksInTaskStates();
+        Process.SetTasksInTaskStates();
 
     }
 
     public void Execute()
     {
-        Console.WriteLine("--- Starting Process ---");
-        _runner = new WorkflowRunner(process, _context);
-        _runner.Run(process.States[process.StartState]);
-        Console.WriteLine("--- Process Finished ---");
+        var runner = new WorkflowRunner(Process, _context);
+        runner.WorkflowEventOccurred += new ConsoleLogger().OnWorkflowEvent;
+        RaiseEvent(new WorkflowEvent(WorkflowEventType.WorkflowStarted, Process.Name ?? ""));
+        runner.Run(Process.States[Process.StartState]);
+        RaiseEvent(new WorkflowEvent(WorkflowEventType.WorkflowCompleted, Process.Name ?? ""));
     }
 
     public async Task ExecuteAsync()
     {
-        Console.WriteLine("--- Starting Process Asynchronously --- ");
-        _runner = new WorkflowRunner(process, _context);
-        await _runner.RunAsync(process.States[process.StartState]);
-        Console.WriteLine("--- Process Finished ---");
+        var runner = new WorkflowRunner(Process, _context);
+        runner.WorkflowEventOccurred += new ConsoleLogger().OnWorkflowEvent;
+        RaiseEvent(new WorkflowEvent(WorkflowEventType.WorkflowStarted, Process.Name ?? ""));
+        await runner.RunAsync(Process.States[Process.StartState]);
+        RaiseEvent(new WorkflowEvent(WorkflowEventType.WorkflowCompleted, Process.Name ?? ""));
     }
 
 }

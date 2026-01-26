@@ -1,4 +1,5 @@
 ﻿{
+  "name": "full-workflow-proccess",
   "startState": "Start",
   "states": {
     "Start": {
