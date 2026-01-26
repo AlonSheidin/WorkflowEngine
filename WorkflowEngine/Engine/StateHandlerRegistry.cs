@@ -30,12 +30,3 @@ public static class StateHandlerRegistry
         }
     }
 }
-
-public class CompleteTask : ITask
-{
-    public TaskResult Execute(WorkflowContext context)
-    {
-        Console.WriteLine("Task complete");
-        return TaskResult.Success;
-    }
-}

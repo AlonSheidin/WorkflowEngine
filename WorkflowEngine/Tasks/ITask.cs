@@ -5,4 +5,6 @@ namespace WorkflowEngine.Tasks;
 public interface ITask
 {
     public TaskResult Execute(WorkflowContext context);
+    
+    public Task<TaskResult> ExecuteAsync(WorkflowContext context);
 }

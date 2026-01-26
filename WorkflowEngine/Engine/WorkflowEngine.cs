@@ -9,6 +9,7 @@ public class WorkflowEngine
     private WorkflowContext _context;
     private WorkflowRunner _runner;
     private Process process;
+    
 
     public WorkflowEngine(string definition)
     {
@@ -27,7 +28,13 @@ public class WorkflowEngine
         Console.WriteLine("--- Process Finished ---");
     }
 
-    
+    public async Task ExecuteAsync()
+    {
+        Console.WriteLine("--- Starting Process Asynchronously --- ");
+        _runner = new WorkflowRunner(process, _context);
+        await _runner.RunAsync(process.States[process.StartState]);
+        Console.WriteLine("--- Process Finished ---");
+    }
 
 }
 

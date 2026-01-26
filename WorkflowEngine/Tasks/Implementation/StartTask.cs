@@ -11,4 +11,10 @@ public class StartTask : ITask
         context.Price = 1;
         return TaskResult.Success;
     }
+
+    public Task<TaskResult> ExecuteAsync(WorkflowContext context)
+    {
+        var result = Execute(context);   
+        return Task.FromResult(result);
+    }
 }

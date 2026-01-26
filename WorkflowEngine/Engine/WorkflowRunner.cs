@@ -12,23 +12,50 @@ public class WorkflowRunner(Process process, WorkflowContext context)
     private TaskResult TaskResult { get; set; }
     private WorkflowContext Context { get; set; } = context;
 
+    public bool Log { get; set; }= true;
+
     public void Run(State startState)
     {
         CurrentState = startState;
         while (CurrentState is not null)
         {
-            Console.Write(" --> state: "+CurrentState.Name);
+            if(Log)
+                Console.Write(" --> state: "+CurrentState.Name);
             if (CurrentState is TaskState taskState)
             {
                 TaskResult = taskState.Task.Execute(Context);
-                Console.Write(", Result: "+TaskResult);
+                if(Log)
+                    Console.Write(", Result: "+TaskResult);
             }
-            Console.WriteLine();
+            if(Log)
+                Console.WriteLine();
             CurrentState = GetNextState();
         }
 
     }
-    
+
+    public async Task RunAsync(State startState)
+    {
+        
+            CurrentState = startState;
+            while (CurrentState is not null)
+            {
+                if (Log)
+                    Console.Write(" --> state: " + CurrentState.Name);
+                if (CurrentState is TaskState taskState)
+                {
+                    TaskResult = await taskState.Task.ExecuteAsync(Context);
+                    if (Log)
+                        Console.Write(", Result: " + TaskResult);
+                }
+
+                if (Log)
+                    Console.WriteLine();
+                CurrentState = GetNextState();
+            }
+        
+    }
+
     private State? GetNextState()
     {
         return CurrentState switch

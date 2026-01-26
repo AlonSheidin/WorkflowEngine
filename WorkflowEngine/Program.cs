@@ -4,11 +4,11 @@ namespace WorkflowEngine;
 using Engine;
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         var engine = new WorkflowEngine("processPath");
-        engine.Execute();
-        
+        await engine.ExecuteAsync();
+
     }
     
     /*
