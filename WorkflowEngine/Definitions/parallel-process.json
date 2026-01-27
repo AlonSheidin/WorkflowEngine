@@ -1,0 +1,54 @@
+﻿{
+  "startState": "Start",
+  "states": {
+    "Start": {
+      "type": "task",
+      "description": "Initialize order",
+      "next": "ValidateOrder"
+    },
+
+    "ValidateOrder": {
+      "type": "parallel",
+      "description": "Run all validations in parallel",
+      "branches": ["CheckInventory", "CheckCustomerStatus", "CheckFraud"],
+      "onSuccess": "ChargePayment",
+      "onFailure": "CancelOrder"
+    },
+
+    "CheckInventory": {
+      "type": "task",
+      "description": "Verify product availability",
+      "next": null
+    },
+
+    "CheckCustomerStatus": {
+      "type": "task",
+      "description": "Verify customer account status",
+      "next": null
+    },
+
+    "CheckFraud": {
+      "type": "task",
+      "description": "Run fraud detection checks",
+      "next": null
+    },
+
+    "ChargePayment": {
+      "type": "task",
+      "description": "Charge the customer",
+      "next": "ShipOrder"
+    },
+
+    "CancelOrder": {
+      "type": "task",
+      "description": "Cancel the order due to validation failure",
+      "next": null
+    },
+
+    "ShipOrder": {
+      "type": "task",
+      "description": "Ship the order",
+      "next": null
+    }
+  }
+}

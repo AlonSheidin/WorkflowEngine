@@ -1,28 +1,21 @@
 ﻿using WorkflowEngine.Engine;
+using WorkflowEngine.Engine.Context;
+using WorkflowEngine.Engine.Context.ContextEvents;
 
 namespace WorkflowEngine.Tasks.Implementation;
 
 public class ShipOrderTask : ITask
 {
-    public async Task<TaskResult> ExecuteAsync(WorkflowContext context)
+    public Task<(TaskResult, List<IContextEvent>)> ExecuteAsync(
+        WorkflowContext context)
     {
-        if (!context.PaymentCharged)
-            return TaskResult.Failure;
-        
-        await Task.Delay(100);
-        
-        context.Shipped = true;
-        return TaskResult.Success;
-    }
+        var events = new List<IContextEvent>
+        {
+            new SetEvent<string>(c => c.OrderStatus, "Shipped")
+        };
 
-    public TaskResult Execute(WorkflowContext context)
-    {
-        if (!context.PaymentCharged)
-            return TaskResult.Failure;
-        
-        Thread.Sleep(1000);
-        
-        context.Shipped = true;
-        return TaskResult.Success;
+        return Task.FromResult((TaskResult.Success, events));
     }
 }
+
+

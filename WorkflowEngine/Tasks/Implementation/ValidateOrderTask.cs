@@ -1,29 +1,26 @@
 ﻿using WorkflowEngine.Engine;
+using WorkflowEngine.Engine.Context;
+using WorkflowEngine.Engine.Context.ContextEvents;
 
 namespace WorkflowEngine.Tasks.Implementation;
 
 public class ValidateOrderTask : ITask
 {
-    public TaskResult Execute(WorkflowContext context)
+    public Task<(TaskResult, List<IContextEvent>)> ExecuteAsync(
+        WorkflowContext context)
     {
-        Thread.Sleep(5000);
-        
-        if (context.OrderId <= 0)
-            return TaskResult.Failure;
+        if (string.IsNullOrEmpty(context.OrderStatus))
+        {
+            return Task.FromResult(
+                (TaskResult.Failure, new List<IContextEvent>()));
+        }
 
-        context.IsValid = true;
-        return TaskResult.Success;
-    }
-
-    public async Task<TaskResult> ExecuteAsync(WorkflowContext context)
-    {
-        await Task.Delay(5000);
+        var events = new List<IContextEvent>
+        {
+            new SetEvent<bool>(c => c.PaymentApproved, true)
+        };
         
-        
-        if (context.OrderId <= 0)
-            return TaskResult.Failure;
-
-        context.IsValid = true;
-        return TaskResult.Success;
+        return Task.FromResult((TaskResult.Success, events));
     }
 }
+

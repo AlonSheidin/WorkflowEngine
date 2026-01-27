@@ -1,10 +1,11 @@
 ﻿using WorkflowEngine.Engine;
+using WorkflowEngine.Engine.Context;
+using WorkflowEngine.Engine.Context.ContextEvents;
 
 namespace WorkflowEngine.Tasks;
 
 public interface ITask
 {
-    public TaskResult Execute(WorkflowContext context);
-    
-    public Task<TaskResult> ExecuteAsync(WorkflowContext context);
+    Task<(TaskResult Result, List<IContextEvent> Events)> ExecuteAsync(
+        WorkflowContext context);
 }

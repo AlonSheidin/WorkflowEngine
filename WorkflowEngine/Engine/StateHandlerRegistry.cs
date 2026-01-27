@@ -12,7 +12,7 @@ public static class StateHandlerRegistry
         var dict = new Dictionary<string, ITask>();
         var tasks = typeof(ITask).Assembly.GetTypes()
             .Where(t => t.IsClass && typeof(ITask).IsAssignableFrom(t) && !t.IsInterface)
-            .Select(t => (ITask)Activator.CreateInstance(t));
+            .Select(t => (ITask) Activator.CreateInstance(t)!);
 
         foreach (var task in tasks)
         {
@@ -30,7 +30,8 @@ public static class StateHandlerRegistry
         {   
             statePair.Value.Name = statePair.Key;
             if(statePair.Value is TaskState taskState)
-                taskState.Task = tasks.GetValueOrDefault(statePair.Key) ?? throw new InvalidOperationException($"No task with name {statePair.Key} found");
+                taskState.Task = tasks.GetValueOrDefault(statePair.Key) ??
+                                 throw new InvalidOperationException($"No task with name {statePair.Key} found");
         }
     }
 }

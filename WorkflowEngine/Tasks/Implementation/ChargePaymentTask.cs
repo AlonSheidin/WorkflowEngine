@@ -1,28 +1,26 @@
 ﻿using WorkflowEngine.Engine;
+using WorkflowEngine.Engine.Context;
+using WorkflowEngine.Engine.Context.ContextEvents;
 
 namespace WorkflowEngine.Tasks.Implementation;
 
 public class ChargePaymentTask : ITask
 {
-    public TaskResult Execute(WorkflowContext context)
+    public Task<(TaskResult, List<IContextEvent>)> ExecuteAsync(
+        WorkflowContext context)
     {
-        if (!context.IsValid)
-            return TaskResult.Failure;
-        
-        Thread.Sleep(5000);
-        
-        context.PaymentCharged = true;
-        return TaskResult.Success;
-    }
+        if (!context.PaymentApproved)
+        {
+            return Task.FromResult(
+                (TaskResult.Failure, new List<IContextEvent>()));
+        }
 
-    public async Task<TaskResult> ExecuteAsync(WorkflowContext context)
-    {
-        if (!context.IsValid)
-            return TaskResult.Failure;
-        
-        await Task.Delay(5000);
-        
-        context.PaymentCharged = true;
-        return TaskResult.Success;
+        var events = new List<IContextEvent>
+        {
+            new SetEvent<string>(c => c.OrderStatus, "Paid")
+        };
+
+        return Task.FromResult((TaskResult.Success, events));
     }
 }
+

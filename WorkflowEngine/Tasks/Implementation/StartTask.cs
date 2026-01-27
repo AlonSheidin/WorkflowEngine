@@ -1,20 +1,20 @@
 ﻿using WorkflowEngine.Engine;
+using WorkflowEngine.Engine.Context;
+using WorkflowEngine.Engine.Context.ContextEvents;
 
 namespace WorkflowEngine.Tasks.Implementation;
 
 public class StartTask : ITask
 {
-    public TaskResult Execute(WorkflowContext context)
+    public Task<(TaskResult, List<IContextEvent>)> ExecuteAsync(
+        WorkflowContext context)
     {
-        context.Initialized = true;
-        context.OrderId = 1;
-        context.Price = 1;
-        return TaskResult.Success;
-    }
+        var events = new List<IContextEvent>
+        {
+            new SetEvent<string>(c => c.OrderStatus, "Started")
+        };
 
-    public Task<TaskResult> ExecuteAsync(WorkflowContext context)
-    {
-        var result = Execute(context);   
-        return Task.FromResult(result);
+        return Task.FromResult((TaskResult.Success, events));
     }
 }
+
