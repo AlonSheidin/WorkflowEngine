@@ -2,7 +2,5 @@
 
 namespace WorkflowEngine.Engine.Context.ContextEvents;
 
-public record IncrementEvent(
-    Expression<Func<WorkflowContext, int>> Property,
-    int Amount
-) : IContextEvent;
+public record IncrementEvent(Expression<Func<WorkflowContext, int>> Property, int Amount) : IContextEvent;
+

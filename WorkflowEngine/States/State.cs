@@ -7,7 +7,7 @@ namespace WorkflowEngine.States;
 [JsonDerivedType(typeof(TaskState), "task")]
 [JsonDerivedType(typeof(DecisionState), "decision")]
 [JsonDerivedType(typeof(EndState), "end")]
-[JsonDerivedType(typeof(EndState), "parallel")]
+[JsonDerivedType(typeof(ParallelState), "parallel")]
 public abstract class State
 {
     public StateType Type { get; set; }

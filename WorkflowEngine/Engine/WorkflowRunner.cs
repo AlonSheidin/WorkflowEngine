@@ -11,6 +11,7 @@ public class WorkflowRunner(Process process, WorkflowContext context)
 {
     private State? _currentState;
     private TaskResult _taskResult;
+    private WorkflowContext _context = context;
 
     public event Action<WorkflowEvent>? WorkflowEventOccurred;
     private void RaiseEvent(WorkflowEvent evt) => WorkflowEventOccurred?.Invoke(evt);
@@ -24,23 +25,43 @@ public class WorkflowRunner(Process process, WorkflowContext context)
         {
             RaiseEvent(new WorkflowEvent(WorkflowEventType.StateEntered, process.Name ?? string.Empty, _currentState.Name));
             
-            if (_currentState is TaskState taskState)
+            switch (_currentState)
             {
-                RaiseEvent(new WorkflowEvent(WorkflowEventType.TaskStarted, process.Name ?? string.Empty, taskState.Name));
+                case TaskState taskState:
+                {
+                    RaiseEvent(new WorkflowEvent(WorkflowEventType.TaskStarted, process.Name ?? string.Empty, taskState.Name));
                 
-                var t = await taskState.Task.ExecuteAsync(context);
-                _taskResult = t.Result;
-                
-                if(_taskResult == TaskResult.Success)
-                    ContextMerger.Merge(context, t.Events);
-                
-                RaiseEvent(_taskResult is TaskResult.Success
-                    ? new WorkflowEvent(WorkflowEventType.TaskCompleted, process.Name ?? string.Empty, taskState.Name)
-                    : new WorkflowEvent(WorkflowEventType.TaskFailed, process.Name ?? string.Empty, taskState.Name));
-            }
-            else if (_currentState is ParallelState parallelState)
-            {
-                
+                    var taskStateExecution = await taskState.Task.ExecuteAsync(_context);
+                    _taskResult = taskStateExecution.Result;
+                    if(_taskResult == TaskResult.Success)
+                        _context = ContextMerger.Merge(_context, taskStateExecution.Events);
+                    RaiseEvent(_taskResult is TaskResult.Success
+                        ? new WorkflowEvent(WorkflowEventType.TaskCompleted, process.Name ?? string.Empty, taskState.Name)
+                        : new WorkflowEvent(WorkflowEventType.TaskFailed, process.Name ?? string.Empty, taskState.Name));
+                    break;
+                }
+                case ParallelState parallelState:
+                    var tasks = parallelState.Branches
+                        .Select(t => process.States[t] as TaskState)
+                        .OfType<TaskState>();
+
+                   
+                    
+                    var parallelStateExecution = await Task.WhenAll(tasks.Select(t => t.Task.ExecuteAsync(_context)));
+                    _taskResult = parallelStateExecution.All(exec => exec.Result is TaskResult.Success)
+                        ? TaskResult.Success : TaskResult.Failure;
+                    
+                   
+                    
+                    if (_taskResult == TaskResult.Success)
+                    {
+                        var events = parallelStateExecution
+                            .Select(exec => exec.Events)
+                            .SelectMany(e => e);
+                        
+                        _context = ContextMerger.Merge(_context, events);
+                    }
+                    break;
             }
             
             RaiseEvent(new WorkflowEvent(WorkflowEventType.StateExited, process.Name ?? string.Empty, _currentState.Name));
@@ -54,9 +75,27 @@ public class WorkflowRunner(Process process, WorkflowContext context)
         {
             TaskState state => GetNextStateOfTaskState(state),
             DecisionState decisionState => GetNextStateOfDecisionState(decisionState),
+            ParallelState parallelState => GetNextStateOfParallelState(parallelState),
             EndState => null,
             _ => throw new ArgumentException("Unknown state", nameof(_currentState))
         };
+    }
+
+    private State GetNextStateOfParallelState(ParallelState state)
+    {
+        if (state.Next != null && state is { OnSuccess: null, OnFailure: null })
+        {
+            return _taskResult == TaskResult.Success
+                ? process.States[state.Next] : throw new Exception("Failure of safe parallel state, non-safe parallel states should have OnSuccess and OnFailure fields");
+        }
+
+        if (state is { OnSuccess: not null, OnFailure: not null, Next: null }) 
+        {
+            return _taskResult == TaskResult.Success ? process.States[state.OnSuccess] : process.States[state.OnFailure];
+        }
+        
+        throw new Exception($"Parallel State cannot have a Next state and OnSuccess or OnFailure States (state: {state})");
+ 
     }
 
     private State GetNextStateOfTaskState(TaskState state)
@@ -88,7 +127,7 @@ public class WorkflowRunner(Process process, WorkflowContext context)
         foreach (var transition in decisionState.Transitions)
         {
             var condition = transition.CompileCondition();
-            if (condition(context))
+            if (condition(_context))
             {
                 return process.States[transition.Next];
             }

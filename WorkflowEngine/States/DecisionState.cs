@@ -5,15 +5,11 @@ namespace WorkflowEngine.States;
 using WorkflowEngine.Engine;
 
 
-public class DecisionState : State
+public class DecisionState() : State(StateType.Decision, "description")
 {
     public Transition[] Transitions { get; set; }
     [JsonIgnore]
     public Func<WorkflowEngine, bool> Condition { get; set; }
-    public DecisionState() : base(StateType.Decision, "description")
-    {
-        
-    }
 
     public override string ToString()
     {

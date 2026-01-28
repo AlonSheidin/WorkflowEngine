@@ -6,15 +6,15 @@ namespace WorkflowEngine.Tasks.Implementation;
 
 public class StartTask : ITask
 {
-    public Task<(TaskResult, List<IContextEvent>)> ExecuteAsync(
-        WorkflowContext context)
+    public Task<(TaskResult, List<IContextEvent>)> ExecuteAsync(WorkflowContext context)
     {
         var events = new List<IContextEvent>
         {
-            new SetEvent<string>(c => c.OrderStatus, "Started")
+            new SetEvent<string>(c => c.OrderStatus, "Started"),
+            new SetEvent<bool>(c => c.PaymentApproved, true),
         };
-
         return Task.FromResult((TaskResult.Success, events));
     }
 }
+
 

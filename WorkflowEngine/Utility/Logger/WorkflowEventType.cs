@@ -8,6 +8,9 @@ public enum WorkflowEventType
     StateExited,
     TaskStarted,
     TaskCompleted,
-    TaskFailed
+    TaskFailed,
+    ParallelTasksStarted,
+    ParallelTasksCompleted,
+    ParallelTasksFailed,
 }
 

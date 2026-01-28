@@ -3,7 +3,7 @@ using WorkflowEngine.Tasks;
 
 namespace WorkflowEngine.States;
 
-public class TaskState : State
+public class TaskState() : State(StateType.Task, "description")
 {
     public string? Next { get; set; }
     public string? OnSuccess { get; set; }
@@ -15,11 +15,6 @@ public class TaskState : State
     
     [JsonIgnore]
     public ITask Task { get; set; }
-    
-    public TaskState() : base(StateType.Task, "")
-    {
-        
-    }
 
     public override string ToString()
     {

@@ -42,13 +42,23 @@
     "CancelOrder": {
       "type": "task",
       "description": "Cancel the order due to validation failure",
-      "next": null
+      "next": "CancelOrderEnd"
     },
 
     "ShipOrder": {
       "type": "task",
       "description": "Ship the order",
-      "next": null
+      "next": "ShipOrderEnd"
+    },
+    
+    "ShipOrderEnd":{
+      "type": "end",
+      "description": "order was shipped successfully"
+    },
+    
+    "CancelOrderEnd":{
+      "type": "end",
+      "description": "order was cancelled"
     }
   }
 }

@@ -27,6 +27,15 @@ public class ConsoleLogger : IWorkflowObserver
             case WorkflowEventType.TaskFailed:
                 Console.WriteLine($"[{evt.Timestamp}] Task in state '{evt.StateName}' failed.");
                 break;
+            case WorkflowEventType.ParallelTasksStarted:
+                Console.WriteLine($"[{evt.Timestamp}] Parallel tasks in state '{evt.StateName}'started.");
+                break;
+            case WorkflowEventType.ParallelTasksCompleted:
+                Console.WriteLine($"[{evt.Timestamp}] Parallel tasks in state '{evt.StateName}' completed successfully.");
+                break;
+            case WorkflowEventType.ParallelTasksFailed:
+                Console.WriteLine($"[{evt.Timestamp}] Parallel tasks in state '{evt.StateName}' failed.");
+                break;
         }
     }
 }
