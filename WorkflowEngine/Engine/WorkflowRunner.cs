@@ -1,5 +1,6 @@
 ﻿
 using WorkflowEngine.Engine.Context;
+using WorkflowEngine.Persistence;
 using WorkflowEngine.States;
 using WorkflowEngine.Tasks;
 using WorkflowEngine.Transitions;
@@ -18,15 +19,20 @@ public class WorkflowRunner(Process process, WorkflowContext context)
     
     
 
-    public async Task RunAsync(State startState)
+    public async Task RunAsync(State startState, WorkflowInstance instance)
     {
         _currentState = startState;
         while (_currentState is not null)
         {
+            instance.CurrentStateName = _currentState.Name;
+            instance.Context = _context;
+            instance.Status =  WorkflowStatus.Running;
+            new JsonWorkflowStore().UpdateInstance(instance);
+            
             RaiseEvent(new WorkflowEvent(WorkflowEventType.StateEntered, process.Name ?? string.Empty, _currentState.Name));
             
             switch (_currentState)
-            {
+            {   
                 case TaskState taskState:
                 {
                     RaiseEvent(new WorkflowEvent(WorkflowEventType.TaskStarted, process.Name ?? string.Empty, taskState.Name));
@@ -66,7 +72,12 @@ public class WorkflowRunner(Process process, WorkflowContext context)
             
             RaiseEvent(new WorkflowEvent(WorkflowEventType.StateExited, process.Name ?? string.Empty, _currentState.Name));
             _currentState = GetNextState();
+            
+            
         }
+
+        instance.Status = WorkflowStatus.Completed;
+        new JsonWorkflowStore().UpdateInstance(instance);
     }
 
     private State? GetNextState()

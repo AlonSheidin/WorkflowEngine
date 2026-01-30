@@ -10,7 +10,7 @@ public class CheckInventoryTask : ITask
         bool inStock = true; // simulate check
         var events = new List<IContextEvent>();
         
-        await Task.Delay(1000);
+        await Task.Delay(10000);
         Console.WriteLine($"Task {GetType().Name} running on thread {Thread.CurrentThread.ManagedThreadId}");
         
         if (!inStock) return await Task.FromResult((TaskResult.Failure, events));

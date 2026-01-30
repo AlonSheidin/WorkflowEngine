@@ -1,4 +1,6 @@
-﻿using WorkflowEngine.Utility;
+﻿using WorkflowEngine.Engine.Context;
+using WorkflowEngine.Persistence;
+using WorkflowEngine.Utility;
 using WorkflowEngine.Utility.Logger;
 
 namespace WorkflowEngine;
@@ -7,9 +9,10 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        var engine = new WorkflowEngine("F:\\Coding\\WorkflowEngine\\WorkflowEngine\\Definitions\\parallel-process.json");
+        var engine = new WorkflowEngine("F:\\Coding\\WorkflowEngine\\WorkflowEngine\\Definitions" , "workflowInstances.json");
         engine.WorkflowEventOccurred += new ConsoleLogger().OnWorkflowEvent;
-        await engine.ExecuteAsync();
+        
+        await engine.RunAsync(1);
         
         
     }

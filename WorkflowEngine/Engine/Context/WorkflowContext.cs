@@ -46,6 +46,6 @@ public class WorkflowContext
 
     public override string ToString()
     {
-        return $"OrderStatus:{OrderStatus} PaymentApproved:{OrderStatus} RetryCount:{OrderStatus}";
+        return $"OrderStatus: '{OrderStatus}', PaymentApproved:{PaymentApproved}, RetryCount:{RetryCount}";
     }
 }
